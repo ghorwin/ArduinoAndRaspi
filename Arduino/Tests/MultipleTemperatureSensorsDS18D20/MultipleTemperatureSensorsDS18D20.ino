@@ -38,13 +38,21 @@ void setup() {
   sensors.begin();
 }
 
+int static_temp = 20;
+
 void loop() {
   sensors.requestTemperatures(); 
   tempSensor1 = sensors.getTempC(sensor1); // Gets the Sensor 1 values
   tempSensor2 = sensors.getTempC(sensor2); // Gets the Sensor 2 values
+  // print values suitable for serial plotter
+  Serial.print("Sensor 1:");
   Serial.print(tempSensor1);
-  Serial.println(" C  - Sensor 1");
+  Serial.print(",");
+  Serial.print("Sensor 2:");
   Serial.print(tempSensor2);
-  Serial.println(" C  - Sensor 2");  
+  Serial.print(",");
+  Serial.print("RefTemp:");
+  Serial.println(static_temp);
+//  Serial.println(" C  - Sensor 2");  
   delay(5000);
 }
