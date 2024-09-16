@@ -2,7 +2,8 @@
 #define RGB2HSV_h
 
 /*! RGB color representation. */
-struct RgbColor {
+class RgbColor {
+public:
 	RgbColor() {}
 	RgbColor(unsigned char r, unsigned char g, unsigned char b) :
 		m_r(r), m_g(g), m_b(b)
@@ -15,7 +16,8 @@ struct RgbColor {
 
 
 /*! Holds HsvColor but with hue value in range of 0-255, instead of 0-359. */
-struct HsvColor {
+class HsvColor {
+public:
 	HsvColor() {}
 	HsvColor(unsigned char h, unsigned char s, unsigned char v) :
 		m_h(h), m_s(s), m_v(v)

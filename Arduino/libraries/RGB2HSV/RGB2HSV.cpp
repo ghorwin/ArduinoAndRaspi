@@ -1,4 +1,4 @@
-#include "RGB2HSV.m_h"
+#include "RGB2HSV.h"
 
 RgbColor HsvToRgb(HsvColor hsv) {
 	RgbColor rgb;
@@ -25,7 +25,7 @@ RgbColor HsvToRgb(HsvColor hsv) {
 
 	p = (hsv.m_v * (255 - hsv.m_s)) >> 8;
 	q = (hsv.m_v * (255 - ((hsv.m_s * remainder) >> 8))) >> 8;
-	t = (hsv.m_v * (255 - ((hsv.m_s * (255 - remainder)) >> 8))) >> 8;
+	t = (hsv.m_v * (255 - ((hsv.m_s * (255 - (unsigned int)remainder)) >> 8))) >> 8; // require compiler to use 16bit calculation
 
 	switch (region) {
 		case 0:
@@ -83,11 +83,11 @@ HsvColor RgbToHsv(RgbColor rgb) {
 	}
 
 	if (rgbMax == rgb.m_r)
-		hsv.m_h = 0 + 43 * (rgb.m_g - rgb.m_b) / (rgbMax - rgbMin);
+		hsv.m_h = 0 + (unsigned int)43 * (rgb.m_g - rgb.m_b) / (rgbMax - rgbMin);
 	else if (rgbMax == rgb.m_g)
-		hsv.m_h = 85 + 43 * (rgb.m_b - rgb.m_r) / (rgbMax - rgbMin);
+		hsv.m_h = 85 + (unsigned int)43 * (rgb.m_b - rgb.m_r) / (rgbMax - rgbMin);
 	else
-		hsv.m_h = 171 + 43 * (rgb.m_r - rgb.m_g) / (rgbMax - rgbMin);
+		hsv.m_h = 171 + (unsigned int)43 * (rgb.m_r - rgb.m_g) / (rgbMax - rgbMin);
 
 	return hsv;
 }
