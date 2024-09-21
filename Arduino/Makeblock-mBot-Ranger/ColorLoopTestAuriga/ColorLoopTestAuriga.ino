@@ -1,25 +1,6 @@
-/**
- * \par Copyright (C), 2012-2016, MakeBlock
- * @file    ColorLoopTest.ino
- * @author  MakeBlock
- * @version V1.0.0
- * @date    2015/09/02
- * @brief   Description: this file is sample code for RGB LED, It used for random color change
- *
- * Function List:
- * 1. bool MeRGBLed::setColorAt(uint8_t index, uint8_t red, uint8_t green, uint8_t blue)
- * 2. void MeRGBLed::show()
- * 3. void MeRGBLed::setpin(uint8_t port)
- * \par History:
- * <pre>
- * <Author>     <Time>        <Version>      <Descr>
- * Mark Yan     2015/09/02    1.0.0          rebuild the old lib
- * Gregory Toto 2017/03/01    1.0.1          added Auriga support
-</pre>
+/* Testprogramm für den LED Ring auf dem Auriga Board.
  */
-
 #include <MeAuriga.h>
-
 
 #define ALLLEDS        0
 
@@ -87,6 +68,7 @@ void loop()
   // delay(1000);
 
 }
+
 
 void color_loop()
 {
