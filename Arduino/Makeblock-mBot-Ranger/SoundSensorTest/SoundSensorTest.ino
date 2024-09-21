@@ -4,16 +4,15 @@
  */
 #include <MeAuriga.h>
 
-MeSoundSensor mySound(PORT_14);
+MeSoundSensor soundSensor(PORT_14);
 
 void setup() {
   Serial.begin(115200);
 }
 
-void loop()
-{
+void loop() {
   Serial.print("value:");
-  Serial.println(mySound.strength() );
+  Serial.println(soundSensor.strength() );
   delay(50);
 }
 
