@@ -146,6 +146,8 @@ void loop() {
   }
   // now the color loop
   for (int i=0;i<16; ++i) {
+    if ( (i & 0x7) == 0)
+      continue;
     // color bits
     bool r = i & 0x1;
     bool g = i & 0x2;
