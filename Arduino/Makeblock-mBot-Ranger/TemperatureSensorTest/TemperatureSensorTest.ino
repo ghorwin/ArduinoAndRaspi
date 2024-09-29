@@ -13,5 +13,5 @@ void loop() {
   Serial.print(tempSensor.readAnalog());
   Serial.print(",Temperaturwert:");
   Serial.println(tempSensor.readValue());
-  delay(1000);
+  delay(15000);
 }

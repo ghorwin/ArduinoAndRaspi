@@ -1,4 +1,5 @@
-/* Testprogramm für den LED Ring auf dem Auriga Board. */
+#ifndef KnightRiderLEDsH
+#define KnightRiderLEDsH
 
 #include <MeAuriga.h>
 
@@ -10,10 +11,10 @@
     werden die letzten x LEDs etwas abgedunkelt (die letzte immer aus) 
     und die nächste RGB LED erhält die gewünschte Farbe.
 */
-class KnightRaiderLEDs {
+class KnightRiderLEDs {
 public:
   /*! Constructor, takes optional number of trailing LEDs (max 12). */
-  KnightRaiderLEDs(uint8_t trailingLedCount = 6);
+  KnightRiderLEDs(uint8_t trailingLedCount = 6);
 
   void setup();
 
@@ -42,9 +43,9 @@ public:
   LastLED        m_trailingLEDS[LEDNUM];
 };
 
-// *** Implementierung der Klasse KnightRaiderLEDs ***
+// *** Implementierung der Klasse KnightRiderLEDs ***
 
-KnightRaiderLEDs::KnightRaiderLEDs(uint8_t trailingLedCount) : 
+KnightRiderLEDs::KnightRiderLEDs(uint8_t trailingLedCount) : 
   m_led(PORT0, LEDNUM)
 {
   if (trailingLedCount > LEDNUM)
@@ -53,7 +54,7 @@ KnightRaiderLEDs::KnightRaiderLEDs(uint8_t trailingLedCount) :
     m_trailingLedCount = max(1, trailingLedCount);
 }
 
-void KnightRaiderLEDs::setup() {
+void KnightRiderLEDs::setup() {
   // LED Ring Controller ist am PWM PIN D44 angeschlossen
   m_led.setpin(44);
   // Nach dem Setzen des Pin muss minimal kurz gewartet werden.
@@ -68,12 +69,12 @@ void KnightRaiderLEDs::setup() {
   }
 }
 
-void KnightRaiderLEDs::turnOff() {
+void KnightRiderLEDs::turnOff() {
   m_led.setColor(0, 0, 0, 0);  // all LEDs off
   m_led.show();
 }
 
-void KnightRaiderLEDs::step(bool clockWise, uint8_t red, uint8_t green, uint8_t blue) {
+void KnightRiderLEDs::step(bool clockWise, uint8_t red, uint8_t green, uint8_t blue) {
   if (clockWise)
     m_currentPos = (m_currentPos + 1) % LEDNUM;   // Modulo 12 ->  (11 + 1) = 12  -> 12 % 12 = 0
   else
@@ -118,44 +119,6 @@ void KnightRaiderLEDs::step(bool clockWise, uint8_t red, uint8_t green, uint8_t 
   m_led.show();
 }
 
-KnightRaiderLEDs leds(9);
-
-void setup() {
-  leds.setup();
-  Serial.begin(115200);
-}
 
 
-void loop() {
-  // 4 times knight rider
-  for (int i=0; i<12; ++i) {
-    leds.step(true, 255,0,0);
-    delay(100);
-  }
-  for (int i=0; i<12; ++i) {
-    leds.step(false, 255,0,0);
-    delay(100);
-  }
-  for (int i=0; i<12; ++i) {
-    leds.step(true, 255,0,0);
-    delay(100);
-  }
-  for (int i=0; i<12; ++i) {
-    leds.step(false, 255,0,0);
-    delay(100);
-  }
-  // now the color loop
-  for (int i=0;i<16; ++i) {
-    if ( (i & 0x7) == 0)
-      continue;
-    // color bits
-    bool r = i & 0x1;
-    bool g = i & 0x2;
-    bool b = i & 0x4;
-    for (int i=0; i<12; ++i) {
-      leds.step(true, r*255,g*255,b*255);
-      delay(100);
-    }
-
-  }
-}
+#endif // KnightRiderLEDsH
