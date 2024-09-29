@@ -14,8 +14,8 @@ MeUltrasonicSensor ultraSensor(PORT_6);
 
 KnightRiderLEDs leds(9);
 
-#define APPROACH_DISTANCE 30
-#define STOP_DISTANCE 10
+#define APPROACH_DISTANCE 60
+#define STOP_DISTANCE 20
 
 // Interruptfunktion für Encoder 1
 void isr_process_encoder1(void) {
@@ -48,7 +48,7 @@ enum Stages {
 
 int lastOutputMillis;
 Stages stage = S_ScanForward;
-unsigned long lastDistanceScanMillis, lastLedUpdateMillis;
+unsigned long lastDistanceScanMillis, lastLedUpdateMillis, lastSpeedUpdateMillis;
 float distanceInCm = 1000;
 
 unsigned int pulseCounter = 0;
@@ -69,7 +69,7 @@ void setup() {
   TCCR2B = _BV(CS21);
 
   // Variable für gelegentliche Ausgaben auf die serielle Schnittstelle
-  lastOutputMillis = lastDistanceScanMillis = lastLedUpdateMillis = millis();
+  lastOutputMillis = lastDistanceScanMillis = lastLedUpdateMillis = lastSpeedUpdateMillis = millis();
 }
 
 
@@ -85,40 +85,43 @@ void loop() {
   // do different stuff depending on current stage
   switch (stage) {
     case S_ScanForward : {
-        Encoder_1.setTarPWM(-200);
-        Encoder_2.setTarPWM(200);
+        if (now > lastSpeedUpdateMillis + 200) {
+          lastSpeedUpdateMillis = now;
+          Encoder_1.setTarPWM(-200);
+          Encoder_2.setTarPWM(200);
+        }
         // update the LEDs 
         if (now > lastLedUpdateMillis + 100) {
           leds.step(true, 0,255,0);
           lastLedUpdateMillis = now;
         }
         // eval the distance sensor
-        if (distanceInCm < 50) {
+        if (distanceInCm < APPROACH_DISTANCE) {
           stage = S_ApproachEndpoint;
         }
     } break;
 
     case S_ApproachEndpoint : {
         // eval the distance sensor
-        if (distanceInCm < 30) {
+        if (distanceInCm < STOP_DISTANCE) {
           stage = S_Hybernate;
         }
         // compute speed as function of distance
-        float relDist = distanceInCm - 30;
-        Encoder_1.setTarPWM(-50 + relDist*20);
-        Encoder_2.setTarPWM((50 + relDist*20));
+        float relDist = distanceInCm - APPROACH_DISTANCE;
+        float scale = relDist/(APPROACH_DISTANCE - STOP_DISTANCE); // 0 - when green, 1 - when red
+        scale = max(0.0, scale);
+        scale = min(1.0, scale);
+        if (now > lastSpeedUpdateMillis + 200) {
+          Serial.print("distanceInCm:");
+          Serial.println(distanceInCm);
+          lastSpeedUpdateMillis = now;
+          Encoder_1.setTarPWM(-(20 + (1-scale)*80));
+          Encoder_2.setTarPWM((20 + (1-scale)*80));
+        }
         // update the LEDs 
         if (now > lastLedUpdateMillis + 100) {
           // we fade from red (distance 50) to green (distance 30)
-          Serial.print("distanceInCm:");
-          Serial.print(distanceInCm);
-          float relDist = distanceInCm - APPROACH_DISTANCE;
-          float scale = relDist/(APPROACH_DISTANCE - STOP_DISTANCE); // 0 - when green, 1 - when red
-          scale = max(0.0, scale);
-          scale = min(1.0, scale);
           uint8_t hue = scale*86;
-          Serial.print(",hue:");
-          Serial.println(hue);
           HsvColor c(hue,255,255);
           RgbColor rgb = HsvToRgb(c);
           leds.step(true, rgb.m_r, rgb.m_g, rgb.m_b);
@@ -145,6 +148,5 @@ void loop() {
   // In der loop() Funktion wird die Geschwindigkeit im Motor geregelt
   Encoder_1.loop();
   Encoder_2.loop();
-
 }
 
